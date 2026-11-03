@@ -1,43 +1,312 @@
 
-const CACHE_NAME = "njabulo-fx-v1";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-const APP_FILES = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./app.js",
-  "./manifest.json"
-];
+  <title>NJABULO FX | AVIATOR INTELLIGENCE</title>
 
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_FILES))
-  );
+  <meta name="description" content="Independent Aviator statistical research and intelligence platform by Njabulo FX.">
+  <meta name="theme-color" content="#080808">
 
-  self.skipWaiting();
-});
+  <!-- PWA CONFIGURATION -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
 
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      )
-    )
-  );
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-  self.clients.claim();
-});
+  <!-- STYLESHEET -->
+  <link rel="stylesheet" href="./style.css">
+</head>
 
-self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
+<body>
 
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request);
-    })
-  );
-});
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="brand">NJABULO FX</div>
+      <p class="muted">AVIATOR INTELLIGENCE SYSTEM</p>
+    </div>
+
+    <div class="status">● SYSTEM ONLINE</div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="eyebrow">RESEARCH / MATHEMATICS / INTELLIGENCE</p>
+
+    <h1>
+      Understand the <span>Structure.</span>
+    </h1>
+
+    <p class="subtitle">
+      An independent statistical research environment
+      for analysing historical Aviator multiplier outcomes,
+      probability distributions and volatility.
+    </p>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section>
+    <p class="eyebrow">01 / PERFORMANCE OVERVIEW</p>
+    <h2>Intelligence Dashboard</h2>
+
+    <div class="grid">
+
+      <div class="panel">
+        <p class="muted">TOTAL ROUNDS</p>
+        <div class="metric" id="totalRounds">0</div>
+        <p class="muted">Recorded observations</p>
+      </div>
+
+      <div class="panel">
+        <p class="muted">AVERAGE MULTIPLIER</p>
+        <div class="metric" id="averageMultiplier">0.00x</div>
+        <p class="muted">Historical average</p>
+      </div>
+
+      <div class="panel">
+        <p class="muted">HIGHEST MULTIPLIER</p>
+        <div class="metric" id="highestMultiplier">0.00x</div>
+        <p class="muted">Recorded maximum</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DATA COLLECTION -->
+  <section class="panel">
+    <p class="eyebrow">02 / DATA COLLECTION</p>
+    <h2>Round Intelligence</h2>
+
+    <p class="muted">
+      Record completed rounds to build your historical
+      research database.
+    </p>
+
+    <label for="multiplierInput">Completed round multiplier</label>
+
+    <input
+      type="number"
+      id="multiplierInput"
+      placeholder="Example: 2.45"
+      min="1"
+      step="0.01"
+    >
+
+    <button onclick="addRound()">
+      RECORD ROUND
+    </button>
+
+    <p id="message" class="muted" aria-live="polite"></p>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="panel">
+    <p class="eyebrow">03 / HISTORICAL DATABASE</p>
+    <h2>Round History</h2>
+
+    <p class="muted">
+      Review your collected multiplier observations.
+    </p>
+
+    <div class="rounds" id="roundHistory">
+      <p class="muted">No rounds recorded yet.</p>
+    </div>
+
+    <div class="actions">
+      <button onclick="exportRounds()">
+        EXPORT CSV
+      </button>
+    </div>
+  </section>
+
+  <!-- CLASSIFICATION -->
+  <section class="panel">
+    <p class="eyebrow">04 / DISTRIBUTION ANALYSIS</p>
+    <h2>Multiplier Classification</h2>
+
+    <div class="grid">
+
+      <div>
+        <p class="muted">LOW: 1.00x–1.99x</p>
+        <div class="metric" id="lowRounds">0</div>
+      </div>
+
+      <div>
+        <p class="muted">MEDIUM: 2.00x–4.99x</p>
+        <div class="metric" id="mediumRounds">0</div>
+      </div>
+
+      <div>
+        <p class="muted">HIGH: 5.00x+</p>
+        <div class="metric" id="highRounds">0</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROBABILITY -->
+  <section class="panel">
+    <p class="eyebrow">05 / MATHEMATICAL RESEARCH</p>
+    <h2>Probability Laboratory</h2>
+
+    <p class="muted">
+      Explore an illustrative mathematical probability
+      calculation under a hypothetical 97% RTP assumption.
+    </p>
+
+    <label for="targetMultiplier">Target multiplier</label>
+
+    <input
+      type="number"
+      id="targetMultiplier"
+      value="2"
+      min="1"
+      step="0.1"
+    >
+
+    <button onclick="calculateProbability()">
+      CALCULATE PROBABILITY
+    </button>
+
+    <div class="metric" id="probabilityResult">
+      48.50%
+    </div>
+
+    <p class="muted" id="probabilityExplanation">
+      Illustrative estimate, not a prediction.
+    </p>
+  </section>
+
+  <!-- STATISTICAL INTELLIGENCE -->
+  <section class="panel">
+    <p class="eyebrow">06 / STATISTICAL INTELLIGENCE</p>
+    <h2>Research Measurements</h2>
+
+    <div class="grid">
+
+      <div>
+        <p class="muted">MEDIAN MULTIPLIER</p>
+        <div class="metric" id="medianMultiplier">0.00x</div>
+      </div>
+
+      <div>
+        <p class="muted">ROUNDS ABOVE 2X</p>
+        <div class="metric" id="aboveTwo">0</div>
+      </div>
+
+      <div>
+        <p class="muted">ROUNDS ABOVE 5X</p>
+        <div class="metric" id="aboveFive">0</div>
+      </div>
+
+    </div>
+
+    <p class="muted">
+      Measurements describe the collected sample and
+      cannot establish future game outcomes.
+    </p>
+  </section>
+
+  <!-- FORECAST TRACKER -->
+  <section class="panel">
+    <p class="eyebrow">07 / FORECAST EVALUATION</p>
+    <h2>Forecast Research</h2>
+
+    <p class="muted">
+      This module will support timestamped research
+      hypotheses, forecast tracking and out-of-sample
+      model evaluation.
+    </p>
+
+    <p class="muted">
+      No guaranteed or next-round predictions are generated.
+    </p>
+  </section>
+
+  <!-- FUTURE DEVELOPMENT -->
+  <section class="panel">
+    <p class="eyebrow">08 / SYSTEM DEVELOPMENT</p>
+    <h2>Intelligence Engine</h2>
+
+    <p class="muted">
+      Planned research modules:
+    </p>
+
+    <ul>
+      <li>Multiplier frequency distribution</li>
+      <li>Historical volatility measurements</li>
+      <li>Consecutive outcome analysis</li>
+      <li>Sample size and statistical confidence</li>
+      <li>Data import and validation</li>
+      <li>Forecast calibration and evaluation</li>
+    </ul>
+  </section>
+
+  <!-- DISCLAIMER -->
+  <section class="panel">
+    <p class="eyebrow">PLATFORM TRANSPARENCY</p>
+    <h2>Research Disclaimer</h2>
+
+    <p class="muted">
+      Njabulo FX Aviator Intelligence is an independent
+      statistical research platform and is not affiliated
+      with SPRIBE.
+    </p>
+
+    <p class="muted">
+      Historical results do not determine future
+      independent outcomes. Statistical analysis cannot
+      reveal a future server-generated result.
+    </p>
+
+    <p class="muted">
+      The 97% RTP example is an illustrative assumption,
+      not a verified setting for every Aviator operator.
+    </p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="brand">NJABULO FX</div>
+
+    <p class="muted">
+      INTELLIGENCE THROUGH MATHEMATICS.
+    </p>
+
+    <p class="muted">
+      © 2026 NJABULO FX. ALL RIGHTS RESERVED.
+    </p>
+  </footer>
+
+</div>
+
+<!-- APPLICATION JAVASCRIPT -->
+<script src="./app.js"></script>
+
+<!-- SERVICE WORKER REGISTRATION -->
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(function () {
+          console.log("NJABULO FX PWA successfully registered.");
+        })
+        .catch(function (error) {
+          console.error("PWA registration error:", error);
+        });
+
+    });
+  }
+</script>
+
+</body>
+</html>
