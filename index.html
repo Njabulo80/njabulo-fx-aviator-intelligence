@@ -1,261 +1,43 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080808">
+const CACHE_NAME = "njabulo-fx-v1";
 
-  <title>NJABULO FX | AVIATOR INTELLIGENCE</title>
+const APP_FILES = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./manifest.json"
+];
 
-  <meta name="description" content="Njabulo FX independent Aviator statistical research and intelligence platform.">
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(APP_FILES))
+  );
 
-  <link rel="stylesheet" href="assets/style.css">
-</head>
+  self.skipWaiting();
+});
 
-<body>
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
+    )
+  );
 
-<div class="container">
+  self.clients.claim();
+});
 
-  <!-- NAVIGATION -->
-  <header>
-    <div>
-      <div class="brand">NJABULO FX</div>
-      <p class="muted">AVIATOR INTELLIGENCE SYSTEM</p>
-    </div>
-    <div class="status">● SYSTEM ONLINE</div>
-  </header>
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
 
-  <!-- INTRODUCTION -->
-  <section class="hero">
-    <p class="eyebrow">INTELLIGENCE / RESEARCH / ANALYTICS</p>
-    <h1>Understand the <span>Structure.</span></h1>
-    <p class="subtitle">
-      A statistical research environment for examining
-      Aviator multiplier distributions, historical outcomes
-      and probability.
-    </p>
-  </section>
-
-  <!-- DASHBOARD METRICS -->
-  <section>
-    <h2>Performance Overview</h2>
-
-    <div class="grid">
-
-      <div class="panel">
-        <p class="muted">TOTAL ROUNDS</p>
-        <div class="metric" id="totalRounds">0</div>
-        <p class="muted">Recorded observations</p>
-      </div>
-
-      <div class="panel">
-        <p class="muted">AVERAGE MULTIPLIER</p>
-        <div class="metric" id="averageMultiplier">0.00x</div>
-        <p class="muted">Historical average</p>
-      </div>
-
-      <div class="panel">
-        <p class="muted">HIGHEST MULTIPLIER</p>
-        <div class="metric" id="highestMultiplier">0.00x</div>
-        <p class="muted">Recorded maximum</p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ROUND ENTRY -->
-  <section class="panel">
-    <p class="eyebrow">01 / DATA COLLECTION</p>
-    <h2>Round Intelligence</h2>
-
-    <p class="muted">
-      Record a completed round to build your historical
-      research database.
-    </p>
-
-    <label for="multiplierInput">Round multiplier</label>
-
-    <input
-      type="number"
-      id="multiplierInput"
-      placeholder="Enter multiplier e.g. 2.45"
-      min="1"
-      step="0.01"
-    >
-
-    <button onclick="addRound()">
-      RECORD ROUND
-    </button>
-
-    <p id="message" class="muted" aria-live="polite"></p>
-  </section>
-
-  <!-- HISTORICAL DATABASE -->
-  <section class="panel">
-    <p class="eyebrow">02 / HISTORICAL DATABASE</p>
-    <h2>Round History</h2>
-
-    <p class="muted">
-      Review your recorded observations.
-    </p>
-
-    <div class="rounds" id="roundHistory">
-      <p class="muted">No observations recorded.</p>
-    </div>
-
-    <div class="actions">
-      <button onclick="exportRounds()">
-        EXPORT CSV
-      </button>
-    </div>
-  </section>
-
-  <!-- DISTRIBUTION ANALYSIS -->
-  <section class="panel">
-    <p class="eyebrow">03 / DISTRIBUTION ANALYSIS</p>
-    <h2>Multiplier Classification</h2>
-
-    <div class="grid">
-
-      <div>
-        <p class="muted">LOW (1.00x–1.99x)</p>
-        <div class="metric" id="lowRounds">0</div>
-      </div>
-
-      <div>
-        <p class="muted">MEDIUM (2.00x–4.99x)</p>
-        <div class="metric" id="mediumRounds">0</div>
-      </div>
-
-      <div>
-        <p class="muted">HIGH (5.00x+)</p>
-        <div class="metric" id="highRounds">0</div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- PROBABILITY LABORATORY -->
-  <section class="panel">
-    <p class="eyebrow">04 / MATHEMATICAL RESEARCH</p>
-    <h2>Probability Laboratory</h2>
-
-    <p class="muted">
-      Explore an illustrative theoretical probability
-      calculation using a 97% RTP assumption.
-    </p>
-
-    <label for="targetMultiplier">Target multiplier</label>
-
-    <input
-      type="number"
-      id="targetMultiplier"
-      value="2"
-      min="1"
-      step="0.1"
-    >
-
-    <button onclick="calculateProbability()">
-      CALCULATE PROBABILITY
-    </button>
-
-    <div class="metric" id="probabilityResult">
-      48.50%
-    </div>
-
-    <p class="muted" id="probabilityExplanation">
-      Illustrative theoretical estimate, not a prediction.
-    </p>
-  </section>
-
-  <!-- STATISTICAL RESEARCH -->
-  <section class="panel">
-    <p class="eyebrow">05 / RESEARCH ENGINE</p>
-    <h2>Statistical Intelligence</h2>
-
-    <div class="grid">
-
-      <div>
-        <p class="muted">MEDIAN MULTIPLIER</p>
-        <div class="metric" id="medianMultiplier">0.00x</div>
-      </div>
-
-      <div>
-        <p class="muted">ROUNDS ABOVE 2X</p>
-        <div class="metric" id="aboveTwo">0</div>
-      </div>
-
-      <div>
-        <p class="muted">ROUNDS ABOVE 5X</p>
-        <div class="metric" id="aboveFive">0</div>
-      </div>
-
-    </div>
-
-    <p class="muted">
-      These measurements describe the recorded sample.
-      They do not establish future outcomes.
-    </p>
-  </section>
-
-  <!-- FORECAST TRACKER -->
-  <section class="panel">
-    <p class="eyebrow">06 / FORECAST EVALUATION</p>
-    <h2>Research Forecast Tracker</h2>
-
-    <p class="muted">
-      A future module for recording timestamped research
-      hypotheses and evaluating them against subsequent
-      completed rounds.
-    </p>
-
-    <p class="muted">
-      No next-round prediction is currently generated.
-    </p>
-  </section>
-
-  <!-- DISCLAIMER -->
-  <section class="panel">
-    <p class="eyebrow">PLATFORM TRANSPARENCY</p>
-    <h2>Research Disclaimer</h2>
-
-    <p class="muted">
-      Njabulo FX Aviator Intelligence is an independent
-      statistical research platform. It is not affiliated
-      with SPRIBE.
-    </p>
-
-    <p class="muted">
-      Aviator outcomes are generated through a
-      provably fair system. Historical observations
-      cannot reveal the secret server seed or guarantee
-      the next outcome.
-    </p>
-
-    <p class="muted">
-      Statistical estimates depend on assumptions about
-      game rules and return-to-player settings. They
-      should not be interpreted as guaranteed probabilities
-      for a particular operator.
-    </p>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="brand">NJABULO FX</div>
-    <p class="muted">
-      INTELLIGENCE THROUGH MATHEMATICS.
-    </p>
-    <p class="muted">
-      © 2026 NJABULO FX. ALL RIGHTS RESERVED.
-    </p>
-  </footer>
-
-</div>
-
-<!-- APPLICATION ENGINE -->
-<script src="assets/app.js"></script>
-
-</body>
-</html>
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      return cached || fetch(event.request);
+    })
+  );
+});
