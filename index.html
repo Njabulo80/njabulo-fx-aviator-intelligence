@@ -4,40 +4,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
 
-  <title>Njabulo FX | Aviator Intelligence</title>
+  <title>NJABULO FX | AVIATOR INTELLIGENCE</title>
+
+  <meta name="description" content="Njabulo FX independent Aviator statistical research and intelligence platform.">
 
   <link rel="stylesheet" href="assets/style.css">
-
-  <meta name="theme-color" content="#080808">
-  <meta name="description" content="Njabulo FX Aviator statistical research and intelligence dashboard.">
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <!-- HEADER -->
-    <header>
-      <div>
-        <div class="brand">N J A B U L O  F X</div>
-        <p class="muted">AVIATOR INTELLIGENCE</p>
-      </div>
+  <!-- NAVIGATION -->
+  <header>
+    <div>
+      <div class="brand">NJABULO FX</div>
+      <p class="muted">AVIATOR INTELLIGENCE SYSTEM</p>
+    </div>
+    <div class="status">● SYSTEM ONLINE</div>
+  </header>
 
-      <div class="status">● SYSTEM ONLINE</div>
-    </header>
+  <!-- INTRODUCTION -->
+  <section class="hero">
+    <p class="eyebrow">INTELLIGENCE / RESEARCH / ANALYTICS</p>
+    <h1>Understand the <span>Structure.</span></h1>
+    <p class="subtitle">
+      A statistical research environment for examining
+      Aviator multiplier distributions, historical outcomes
+      and probability.
+    </p>
+  </section>
 
-    <!-- INTRODUCTION -->
-    <section>
-      <h1>Intelligence Dashboard</h1>
-      <p class="subtitle">
-        Statistical research. Probability analysis.
-        Historical round intelligence.
-      </p>
-    </section>
+  <!-- DASHBOARD METRICS -->
+  <section>
+    <h2>Performance Overview</h2>
 
-    <!-- STATISTICS -->
-    <section class="grid">
+    <div class="grid">
 
       <div class="panel">
         <p class="muted">TOTAL ROUNDS</p>
@@ -54,233 +58,204 @@
       <div class="panel">
         <p class="muted">HIGHEST MULTIPLIER</p>
         <div class="metric" id="highestMultiplier">0.00x</div>
-        <p class="muted">Highest recorded round</p>
+        <p class="muted">Recorded maximum</p>
       </div>
 
-    </section>
+    </div>
+  </section>
 
-    <!-- ROUND ENTRY -->
-    <section class="panel">
-      <h2>Round Intelligence</h2>
+  <!-- ROUND ENTRY -->
+  <section class="panel">
+    <p class="eyebrow">01 / DATA COLLECTION</p>
+    <h2>Round Intelligence</h2>
 
-      <p class="muted">
-        Enter a multiplier from a completed Aviator round.
-      </p>
+    <p class="muted">
+      Record a completed round to build your historical
+      research database.
+    </p>
 
-      <input
-        type="number"
-        id="multiplierInput"
-        placeholder="Example: 2.45"
-        min="1"
-        step="0.01"
-      >
+    <label for="multiplierInput">Round multiplier</label>
 
-      <button onclick="addRound()">
-        RECORD ROUND
+    <input
+      type="number"
+      id="multiplierInput"
+      placeholder="Enter multiplier e.g. 2.45"
+      min="1"
+      step="0.01"
+    >
+
+    <button onclick="addRound()">
+      RECORD ROUND
+    </button>
+
+    <p id="message" class="muted" aria-live="polite"></p>
+  </section>
+
+  <!-- HISTORICAL DATABASE -->
+  <section class="panel">
+    <p class="eyebrow">02 / HISTORICAL DATABASE</p>
+    <h2>Round History</h2>
+
+    <p class="muted">
+      Review your recorded observations.
+    </p>
+
+    <div class="rounds" id="roundHistory">
+      <p class="muted">No observations recorded.</p>
+    </div>
+
+    <div class="actions">
+      <button onclick="exportRounds()">
+        EXPORT CSV
       </button>
+    </div>
+  </section>
 
-      <p id="message" class="muted"></p>
-    </section>
+  <!-- DISTRIBUTION ANALYSIS -->
+  <section class="panel">
+    <p class="eyebrow">03 / DISTRIBUTION ANALYSIS</p>
+    <h2>Multiplier Classification</h2>
 
-    <!-- HISTORICAL RESULTS -->
-    <section class="panel">
-      <h2>Historical Round Database</h2>
+    <div class="grid">
 
-      <p class="muted">
-        Your recorded round observations appear below.
-      </p>
-
-      <div class="rounds" id="roundHistory">
-        <p class="muted">No rounds recorded yet.</p>
+      <div>
+        <p class="muted">LOW (1.00x–1.99x)</p>
+        <div class="metric" id="lowRounds">0</div>
       </div>
-    </section>
 
-    <!-- PROBABILITY RESEARCH -->
-    <section class="panel">
-      <h2>Probability Laboratory</h2>
+      <div>
+        <p class="muted">MEDIUM (2.00x–4.99x)</p>
+        <div class="metric" id="mediumRounds">0</div>
+      </div>
 
-      <p class="muted">
-        Examine the theoretical probability of reaching
-        a selected multiplier under an illustrative
-        97% return-to-player assumption.
-      </p>
+      <div>
+        <p class="muted">HIGH (5.00x+)</p>
+        <div class="metric" id="highRounds">0</div>
+      </div>
 
-      <input
-        type="number"
-        id="targetMultiplier"
-        placeholder="Target multiplier e.g. 2"
-        min="1"
-        step="0.1"
-        value="2"
-      >
+    </div>
+  </section>
 
-      <button onclick="calculateProbability()">
-        CALCULATE
-      </button>
+  <!-- PROBABILITY LABORATORY -->
+  <section class="panel">
+    <p class="eyebrow">04 / MATHEMATICAL RESEARCH</p>
+    <h2>Probability Laboratory</h2>
 
-      <div class="metric" id="probabilityResult">48.50%</div>
+    <p class="muted">
+      Explore an illustrative theoretical probability
+      calculation using a 97% RTP assumption.
+    </p>
 
-      <p class="muted" id="probabilityExplanation">
-        Illustrative mathematical estimate, not a prediction.
-      </p>
-    </section>
+    <label for="targetMultiplier">Target multiplier</label>
 
-    <!-- DISCLAIMER -->
-    <section class="panel">
-      <h2>Research Disclaimer</h2>
+    <input
+      type="number"
+      id="targetMultiplier"
+      value="2"
+      min="1"
+      step="0.1"
+    >
 
-      <p class="muted">
-        This platform is an independent statistical
-        research tool. Aviator outcomes are designed
-        to be independently determined through a
-        provably fair system. Historical results do
-        not establish the next round's outcome.
-      </p>
+    <button onclick="calculateProbability()">
+      CALCULATE PROBABILITY
+    </button>
 
-      <p class="muted">
-        No guaranteed predictions, profits or winning
-        strategies are offered.
-      </p>
-    </section>
+    <div class="metric" id="probabilityResult">
+      48.50%
+    </div>
 
-    <!-- FOOTER -->
-    <footer>
-      <p class="muted">
-        NJABULO FX © 2026 |
-        AVIATOR INTELLIGENCE
-      </p>
-    </footer>
+    <p class="muted" id="probabilityExplanation">
+      Illustrative theoretical estimate, not a prediction.
+    </p>
+  </section>
 
-  </div>
+  <!-- STATISTICAL RESEARCH -->
+  <section class="panel">
+    <p class="eyebrow">05 / RESEARCH ENGINE</p>
+    <h2>Statistical Intelligence</h2>
 
-  <!-- APPLICATION LOGIC -->
-  <script>
+    <div class="grid">
 
-    let rounds = JSON.parse(
-      localStorage.getItem("njabuloRounds") || "[]"
-    );
+      <div>
+        <p class="muted">MEDIAN MULTIPLIER</p>
+        <div class="metric" id="medianMultiplier">0.00x</div>
+      </div>
 
-    function saveRounds() {
-      localStorage.setItem(
-        "njabuloRounds",
-        JSON.stringify(rounds)
-      );
-    }
+      <div>
+        <p class="muted">ROUNDS ABOVE 2X</p>
+        <div class="metric" id="aboveTwo">0</div>
+      </div>
 
-    function addRound() {
-      const input = document.getElementById("multiplierInput");
-      const value = Number(input.value);
-      const message = document.getElementById("message");
+      <div>
+        <p class="muted">ROUNDS ABOVE 5X</p>
+        <div class="metric" id="aboveFive">0</div>
+      </div>
 
-      if (!Number.isFinite(value) || value < 1) {
-        message.textContent =
-          "Please enter a valid multiplier of at least 1.00.";
-        return;
-      }
+    </div>
 
-      rounds.unshift({
-        multiplier: value,
-        recordedAt: new Date().toISOString()
-      });
+    <p class="muted">
+      These measurements describe the recorded sample.
+      They do not establish future outcomes.
+    </p>
+  </section>
 
-      saveRounds();
-      input.value = "";
-      message.textContent = "Round successfully recorded.";
+  <!-- FORECAST TRACKER -->
+  <section class="panel">
+    <p class="eyebrow">06 / FORECAST EVALUATION</p>
+    <h2>Research Forecast Tracker</h2>
 
-      renderDashboard();
-    }
+    <p class="muted">
+      A future module for recording timestamped research
+      hypotheses and evaluating them against subsequent
+      completed rounds.
+    </p>
 
-    function renderDashboard() {
-      const total = rounds.length;
+    <p class="muted">
+      No next-round prediction is currently generated.
+    </p>
+  </section>
 
-      const totalElement =
-        document.getElementById("totalRounds");
+  <!-- DISCLAIMER -->
+  <section class="panel">
+    <p class="eyebrow">PLATFORM TRANSPARENCY</p>
+    <h2>Research Disclaimer</h2>
 
-      const averageElement =
-        document.getElementById("averageMultiplier");
+    <p class="muted">
+      Njabulo FX Aviator Intelligence is an independent
+      statistical research platform. It is not affiliated
+      with SPRIBE.
+    </p>
 
-      const highestElement =
-        document.getElementById("highestMultiplier");
+    <p class="muted">
+      Aviator outcomes are generated through a
+      provably fair system. Historical observations
+      cannot reveal the secret server seed or guarantee
+      the next outcome.
+    </p>
 
-      const historyElement =
-        document.getElementById("roundHistory");
+    <p class="muted">
+      Statistical estimates depend on assumptions about
+      game rules and return-to-player settings. They
+      should not be interpreted as guaranteed probabilities
+      for a particular operator.
+    </p>
+  </section>
 
-      totalElement.textContent = total;
+  <!-- FOOTER -->
+  <footer>
+    <div class="brand">NJABULO FX</div>
+    <p class="muted">
+      INTELLIGENCE THROUGH MATHEMATICS.
+    </p>
+    <p class="muted">
+      © 2026 NJABULO FX. ALL RIGHTS RESERVED.
+    </p>
+  </footer>
 
-      if (total === 0) {
-        averageElement.textContent = "0.00x";
-        highestElement.textContent = "0.00x";
-        historyElement.innerHTML =
-          '<p class="muted">No rounds recorded yet.</p>';
-        return;
-      }
+</div>
 
-      const sum = rounds.reduce(
-        (acc, round) => acc + round.multiplier,
-        0
-      );
-
-      const average = sum / total;
-
-      const highest = Math.max(
-        ...rounds.map(round => round.multiplier)
-      );
-
-      averageElement.textContent =
-        average.toFixed(2) + "x";
-
-      highestElement.textContent =
-        highest.toFixed(2) + "x";
-
-      historyElement.innerHTML = "";
-
-      rounds.forEach(round => {
-        const item = document.createElement("div");
-
-        item.className =
-          "round " +
-          (round.multiplier >= 2 ? "high" : "low");
-
-        item.textContent =
-          round.multiplier.toFixed(2) + "x";
-
-        historyElement.appendChild(item);
-      });
-    }
-
-    function calculateProbability() {
-      const target = Number(
-        document.getElementById("targetMultiplier").value
-      );
-
-      const result =
-        document.getElementById("probabilityResult");
-
-      const explanation =
-        document.getElementById("probabilityExplanation");
-
-      if (!Number.isFinite(target) || target < 1) {
-        result.textContent = "--";
-        explanation.textContent =
-          "Enter a valid target multiplier.";
-        return;
-      }
-
-      const rtp = 0.97;
-      const probability = (rtp / target) * 100;
-
-      result.textContent =
-        Math.min(probability, 100).toFixed(2) + "%";
-
-      explanation.textContent =
-        "Illustrative theoretical estimate using 97% RTP. " +
-        "Actual game rules and operator settings may differ. " +
-        "This does not predict the next round.";
-    }
-
-    renderDashboard();
-
-  </script>
+<!-- APPLICATION ENGINE -->
+<script src="assets/app.js"></script>
 
 </body>
 </html>
