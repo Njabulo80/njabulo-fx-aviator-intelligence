@@ -1,195 +1,180 @@
 
-/* =====================================
-   NJABULO FX - AVIATOR INTELLIGENCE
-   Historical Statistical Engine
-===================================== */
+"use strict";
 
 const STORAGE_KEY = "njabuloRounds";
 
 let rounds = [];
 
 try {
-  const saved = JSON.parse(
-    localStorage.getItem(STORAGE_KEY) || "[]"
-  );
-
-  rounds = Array.isArray(saved) ? saved : [];
-} catch {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  rounds = Array.isArray(saved)
+    ? saved.filter(value => Number.isFinite(value) && value >= 1)
+    : [];
+} catch (error) {
   rounds = [];
 }
 
-/* SAVE DATA */
-
 function saveRounds() {
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(rounds)
-  );
-}
-
-/* ADD A COMPLETED ROUND */
-
-function addRound() {
-  const input = document.getElementById("multiplierInput");
-  const message = document.getElementById("message");
-
-  const value = Number(input.value);
-
-  if (!Number.isFinite(value) || value < 1) {
-    message.textContent = "Enter a valid multiplier.";
-    return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(rounds));
+  } catch (error) {
+    showMessage("Could not save data on this device.");
   }
-
-  rounds.unshift({
-    id: crypto.randomUUID(),
-    multiplier: value,
-    recordedAt: new Date().toISOString()
-  });
-
-  saveRounds();
-
-  input.value = "";
-  message.textContent = "Round recorded successfully.";
-
-  renderDashboard();
 }
 
-/* CALCULATE STATISTICS */
+function showMessage(message) {
+  const element = document.getElementById("message");
+  if (element) element.textContent = message;
+}
+
+function calculateMedian(values) {
+  if (!values.length) return 0;
+
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+
+  return sorted.length % 2
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function setText(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = value;
+}
 
 function calculateStatistics() {
-  if (rounds.length === 0) {
+  const total = rounds.length;
+
+  if (!total) {
     return {
       total: 0,
       average: 0,
       highest: 0,
-      lowest: 0,
       median: 0,
+      low: 0,
+      medium: 0,
+      high: 0,
       aboveTwo: 0,
       aboveFive: 0
     };
   }
 
-  const values = rounds.map(
-    round => round.multiplier
-  );
-
-  const sorted = [...values].sort(
-    (a, b) => a - b
-  );
-
-  const total = values.length;
-
-  const average =
-    values.reduce((sum, value) => sum + value, 0) / total;
-
-  const middle = Math.floor(total / 2);
-
-  const median = total % 2 === 0
-    ? (sorted[middle - 1] + sorted[middle]) / 2
-    : sorted[middle];
+  const sum = rounds.reduce((a, b) => a + b, 0);
 
   return {
     total,
-    average,
-    highest: Math.max(...values),
-    lowest: Math.min(...values),
-    median,
-    aboveTwo: values.filter(value => value >= 2).length,
-    aboveFive: values.filter(value => value >= 5).length
+    average: sum / total,
+    highest: Math.max(...rounds),
+    median: calculateMedian(rounds),
+    low: rounds.filter(value => value < 2).length,
+    medium: rounds.filter(value => value >= 2 && value < 5).length,
+    high: rounds.filter(value => value >= 5).length,
+    aboveTwo: rounds.filter(value => value >= 2).length,
+    aboveFive: rounds.filter(value => value >= 5).length
   };
 }
-
-/* UPDATE DASHBOARD */
 
 function renderDashboard() {
   const stats = calculateStatistics();
 
-  document.getElementById("totalRounds").textContent =
-    stats.total;
+  setText("totalRounds", stats.total);
+  setText("averageMultiplier", stats.average.toFixed(2) + "x");
+  setText("highestMultiplier", stats.highest.toFixed(2) + "x");
 
-  document.getElementById("averageMultiplier").textContent =
-    stats.average.toFixed(2) + "x";
+  setText("lowRounds", stats.low);
+  setText("mediumRounds", stats.medium);
+  setText("highRounds", stats.high);
 
-  document.getElementById("highestMultiplier").textContent =
-    stats.highest.toFixed(2) + "x";
+  setText("medianMultiplier", stats.median.toFixed(2) + "x");
+  setText("aboveTwo", stats.aboveTwo);
+  setText("aboveFive", stats.aboveFive);
 
   const history = document.getElementById("roundHistory");
 
-  history.replaceChildren();
+  if (history) {
+    history.replaceChildren();
 
-  if (rounds.length === 0) {
-    const empty = document.createElement("p");
-    empty.className = "muted";
-    empty.textContent = "No rounds recorded yet.";
-    history.appendChild(empty);
+    rounds.slice().reverse().slice(0, 50).forEach(value => {
+      const item = document.createElement("div");
+      item.className = "round";
+      item.textContent = value.toFixed(2) + "x";
+
+      if (value >= 5) item.classList.add("high");
+      if (value < 2) item.classList.add("low");
+
+      history.appendChild(item);
+    });
+
+    if (!rounds.length) {
+      const empty = document.createElement("p");
+      empty.className = "muted";
+      empty.textContent = "No rounds recorded yet.";
+      history.appendChild(empty);
+    }
+  }
+}
+
+function addRound() {
+  const input = document.getElementById("multiplierInput");
+  if (!input) return;
+
+  const value = Number(input.value);
+
+  if (!Number.isFinite(value) || value < 1) {
+    showMessage("Enter a valid multiplier of 1.00x or higher.");
     return;
   }
 
-  rounds.slice(0, 100).forEach(round => {
-    const item = document.createElement("div");
+  rounds.push(Number(value.toFixed(2)));
+  saveRounds();
+  renderDashboard();
 
-    item.className = "round " +
-      (round.multiplier >= 2 ? "high" : "low");
-
-    item.textContent =
-      round.multiplier.toFixed(2) + "x";
-
-    history.appendChild(item);
-  });
+  input.value = "";
+  showMessage("Round successfully recorded.");
 }
-
-/* PROBABILITY RESEARCH */
 
 function calculateProbability() {
-  const target = Number(
-    document.getElementById("targetMultiplier").value
-  );
+  const input = document.getElementById("targetMultiplier");
+  const target = Number(input?.value);
 
-  const result =
-    document.getElementById("probabilityResult");
-
-  const explanation =
-    document.getElementById("probabilityExplanation");
-
-  if (!Number.isFinite(target) || target < 1) {
-    result.textContent = "--";
-    explanation.textContent =
-      "Enter a valid target multiplier.";
+  if (!Number.isFinite(target) || target <= 1) {
+    setText("probabilityResult", "Enter a target above 1.00x.");
+    setText("probabilityExplanation", "");
     return;
   }
 
-  const illustrativeRTP = 0.97;
+  if (!rounds.length) {
+    setText("probabilityResult", "Not enough recorded data.");
+    setText("probabilityExplanation", "Record rounds before analysing historical frequency.");
+    return;
+  }
 
-  const probability =
-    Math.min(1, illustrativeRTP / target) * 100;
+  const count = rounds.filter(value => value >= target).length;
+  const percentage = (count / rounds.length) * 100;
 
-  result.textContent = probability.toFixed(2) + "%";
-
-  explanation.textContent =
-    "Illustrative theoretical estimate only. " +
-    "Actual game rules may differ. Not a next-round prediction.";
+  setText("probabilityResult", percentage.toFixed(2) + "%");
+  setText(
+    "probabilityExplanation",
+    count + " of " + rounds.length +
+    " recorded rounds reached or exceeded " + target.toFixed(2) +
+    "x. This is historical frequency, not the probability of the next round."
+  );
 }
 
-/* EXPORT RESEARCH DATA */
-
 function exportRounds() {
-  if (rounds.length === 0) {
-    alert("There are no rounds to export.");
+  if (!rounds.length) {
+    showMessage("There are no rounds to export yet.");
     return;
   }
 
   const csv = [
-    "Multiplier,Recorded At",
-    ...rounds.map(round =>
-      `${round.multiplier},${round.recordedAt}`
-    )
+    "Round,Multiplier",
+    ...rounds.map((value, index) => (index + 1) + "," + value.toFixed(2))
   ].join("\n");
 
-  const blob = new Blob([csv], {
-    type: "text/csv;charset=utf-8"
-  });
-
-  const url = URL.createObjectURL(blob);
+  const file = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(file);
   const link = document.createElement("a");
 
   link.href = url;
@@ -197,8 +182,7 @@ function exportRounds() {
   link.click();
 
   URL.revokeObjectURL(url);
+  showMessage("Round history exported.");
 }
-
-/* INITIALIZE */
 
 renderDashboard();
